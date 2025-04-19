@@ -116,6 +116,3 @@ Esto abrirá una pestaña en tu navegador con la interfaz de usuario lista para 
 *Proyecto académico — Interfaces de Hardware y Software*
 
 ---
-```
-
----
