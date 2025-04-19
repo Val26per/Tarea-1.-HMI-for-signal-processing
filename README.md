@@ -1,7 +1,3 @@
-vClaro, aquí tienes **TODO el contenido completo del manual de usuario** formateado como un archivo `README.md` para que lo copies y pegues directamente en tu repositorio de GitHub:
-
----
-
 ```markdown
 # 🎚️ Procesamiento de Audio con Filtros Digitales
 
