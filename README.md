@@ -1,4 +1,3 @@
-```markdown
 # 🎚️ Procesamiento de Audio con Filtros Digitales
 
 **Interfaces de Hardware y Software — Proyecto de Interfaz HMI en Streamlit**
@@ -111,6 +110,25 @@ Esto abrirá una pestaña en tu navegador con la interfaz de usuario lista para 
 
 ---
 
+## 📁 Estructura sugerida del proyecto
+
+```
+.
+├── app.py
+├── assets/
+│   ├── Screenshot_cargar_audio.png
+│   ├── Screenshot_aplicar_filtro.png
+│   ├── Screenshot_audio_filtrado.png
+│   ├── Screenshot_fft.png
+│   └── Screenshot_guardar_resultado.png
+├── requirements.txt
+└── README.md
+```
+
+> ⚠️ Asegúrate de colocar tus capturas de pantalla en la carpeta `assets/` con los nombres indicados para que se muestren correctamente en este `README`.
+
+---
+
 ## 👩‍💻 Autor
 
 **Ana Valeria Pérez Pérez**  
@@ -118,3 +136,7 @@ Esto abrirá una pestaña en tu navegador con la interfaz de usuario lista para 
 
 ---
 ```
+
+---
+
+¿Te gustaría que también te genere el contenido para `requirements.txt` o el `.gitignore` del proyecto?
