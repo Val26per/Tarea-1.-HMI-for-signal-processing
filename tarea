@@ -1,3 +1,11 @@
+"""
+Se implementa una interfaz HMI para procesamiento de audio mediante filtros digitales.
+
+Incluye la carga de archivos .wav, .mp3, .aac, aplicación de filtros pasa bajos, pasa altos
+y pasa banda. Visualiza las señales en el dominio del tiempo y la frecuencia (FFT) y
+permite exportar los resultados en múltiples formatos.
+"""
+
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,9 +15,11 @@ from pydub import AudioSegment
 import soundfile as sf
 import io
 
+# 🔧 Configura la interfaz de Streamlit
 st.set_page_config(page_title="Procesamiento de audio", layout="centered")
 st.title("Procesamiento de Audio")
 
+# 🎛️ Inicializa las variables de sesión
 if "estado" not in st.session_state:
     st.session_state.estado = 0
 if "audio_original" not in st.session_state:
@@ -29,7 +39,17 @@ if "frequencies_filtrado" not in st.session_state:
 if "buffer_guardado" not in st.session_state:
     st.session_state.buffer_guardado = None
 
+
 def leer_audio_general(audio_file):
+    """
+    Carga un archivo de audio en diferentes formatos y lo convierte a numpy mono.
+
+    Args:
+        audio_file: Archivo cargado (.wav, .mp3, .aac).
+
+    Returns:
+        tuple: Frecuencia de muestreo y señal de audio normalizada.
+    """
     ext = audio_file.name.split('.')[-1].lower()
     if ext in ['mp3', 'aac']:
         audio = AudioSegment.from_file(audio_file, format=ext)
@@ -45,7 +65,22 @@ def leer_audio_general(audio_file):
     samples /= np.max(np.abs(samples))
     return fs, samples
 
+
 def aplicar_filtro(data, fs, tipo, fc_low, fc_high, orden):
+    """
+    Aplica un filtro digital Butterworth a la señal.
+
+    Args:
+        data: Señal de audio.
+        fs: Frecuencia de muestreo.
+        tipo: Tipo de filtro.
+        fc_low: Frecuencia de corte baja.
+        fc_high: Frecuencia de corte alta (si aplica).
+        orden: Orden del filtro.
+
+    Returns:
+        numpy array: Señal filtrada.
+    """
     nyq = 0.5 * fs
     if tipo == "Pasa-bajas":
         b, a = butter(orden, fc_low / nyq, btype='low')
@@ -55,7 +90,18 @@ def aplicar_filtro(data, fs, tipo, fc_low, fc_high, orden):
         b, a = butter(orden, [fc_low / nyq, fc_high / nyq], btype='band')
     return filtfilt(b, a, data)
 
+
 def aplicar_fft(data, fs):
+    """
+    Calcula la Transformada de Fourier de la señal.
+
+    Args:
+        data: Señal de audio.
+        fs: Frecuencia de muestreo.
+
+    Returns:
+        tuple: Frecuencias y amplitudes.
+    """
     N = len(data)
     T = 1.0 / fs
     yf = np.fft.fft(data)
@@ -63,6 +109,8 @@ def aplicar_fft(data, fs):
     amplitud = 2.0 / N * np.abs(yf[:N // 2])
     return xf, amplitud
 
+
+# 🟢 Paso 1: Cargar audio
 st.subheader("Paso 1️⃣: Cargar audio")
 audio_file = st.file_uploader("Selecciona un archivo de audio (.wav, .mp3, .aac)", type=["wav", "mp3", "aac"])
 
@@ -77,6 +125,7 @@ if st.session_state.estado >= 1:
     st.audio(audio_file, format="audio/wav")
     st.line_chart(st.session_state.audio_original[:5000])
 
+# 🟡 Paso 2: Aplicar filtro
 if st.session_state.estado >= 1:
     st.subheader("Paso 2️⃣: Aplicar filtro")
     tipo_filtro = st.selectbox("Tipo de filtro", ["Pasa-bajas", "Pasa-altas", "Pasa-banda"])
@@ -98,6 +147,7 @@ if st.session_state.estado >= 1:
         st.session_state.estado = 2
         st.success("Filtro aplicado con éxito")
 
+# 🔊 Audio filtrado y comparación en el dominio del tiempo
 if st.session_state.estado >= 2:
     st.subheader("🔉 Audio Filtrado")
     buffer = io.BytesIO()
@@ -113,6 +163,7 @@ if st.session_state.estado >= 2:
         st.markdown("**Filtrado (forma de onda)**")
         st.line_chart(st.session_state.audio_filtrado[:5000])
 
+# 🔵 Paso 3: Aplicar FFT
 if st.session_state.estado >= 2:
     st.subheader("Paso 3️⃣: Transformada de Fourier (FFT)")
     if st.button("Aplicar FFT") and st.session_state.estado == 2:
@@ -125,6 +176,7 @@ if st.session_state.estado >= 2:
         st.session_state.estado = 3
         st.success("Transformada aplicada")
 
+# 🔬 Comparación espectral
 if st.session_state.estado >= 3:
     st.subheader("Comparación de Espectros (FFT)")
     col1, col2 = st.columns(2)
@@ -143,6 +195,7 @@ if st.session_state.estado >= 3:
         ax2.set_ylabel("Amplitud")
         st.pyplot(fig2)
 
+    # 💾 Exportar audio
     st.subheader("Guardar Resultado")
     formato = st.selectbox("Formato de exportación", ["wav", "mp3", "aac"])
     if st.button("Guardar Resultado"):
