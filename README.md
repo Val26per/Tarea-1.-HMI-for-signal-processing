@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🎚️ Procesamiento de Audio con Filtros Digitales
 
 **Interfaces de Hardware y Software — Proyecto de Interfaz HMI en Streamlit**
